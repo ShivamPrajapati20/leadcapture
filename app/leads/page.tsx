@@ -7,13 +7,17 @@ type Lead = {
   email: string
   company: string | null
   source: string
+  message: string | null
   created_at: string
 }
+
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 export default async function LeadsPage() {
   const { data: leads, error } = await supabaseAdmin
     .from('leads')
-    .select('id, full_name, email, company, source, created_at')
+    .select('id, full_name, email, company, source, message, created_at')
     .order('created_at', { ascending: false })
 
   if (error) {
@@ -46,6 +50,7 @@ export default async function LeadsPage() {
                 <th className="px-4 py-3">Email</th>
                 <th className="px-4 py-3">Company</th>
                 <th className="px-4 py-3">Source</th>
+                <th className="px-4 py-3">Message</th>
                 <th className="px-4 py-3">Submitted</th>
               </tr>
             </thead>
@@ -67,7 +72,12 @@ export default async function LeadsPage() {
                       {lead.source}
                     </td>
                     <td className="px-4 py-3 text-gray-600">
-                      {new Date(lead.created_at).toLocaleString()}
+                      {lead.message || '-'}
+                    </td>
+                    <td className="px-4 py-3 text-gray-600">
+                      {new Date(lead.created_at).toLocaleString('en-US', {
+                        timeZone: 'America/Chicago',
+                      })}
                     </td>
                   </tr>
                 ))
