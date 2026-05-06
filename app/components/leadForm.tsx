@@ -3,16 +3,16 @@
 import { useState } from 'react'
 
 export default function LeadForm() {
-  const [loading, setLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState('')
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    setLoading(true)
+  async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
+    event.preventDefault()
+    setIsLoading(true)
     setError('')
 
-    const form = new FormData(e.currentTarget)
+    const form = new FormData(event.target)
 
     const data = {
       full_name: form.get('full_name'),
@@ -26,34 +26,37 @@ export default function LeadForm() {
       const res = await fetch('/api/submit-lead', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify(data)
       })
 
+      const result = await res.json()
+
       if (!res.ok) {
-        throw new Error('Submission failed')
+        setError(result.error || 'Something went wrong.')
+        return
       }
 
       setSuccess(true)
-      e.currentTarget.reset()
+      event.target.reset()
     } catch (err) {
       setError('Something went wrong. Please try again.')
     } finally {
-      setLoading(false)
+      setIsLoading(false)
     }
   }
 
   if (success) {
     return (
       <div className="text-center py-8">
-        <h2 className="text-xl font-semibold">Thanks You</h2>
+        <h2 className="text-xl font-semibold">Thank You</h2>
         <p className="text-gray-500 mt-2">
-          Your message has been submitted.
+          Your details have been submitted successfully.
         </p>
         <button
           onClick={() => setSuccess(false)}
-          className="mt-4 text-blue-600 text-sm underline"
+          className="mt-4 text-blue-600 text-sm underline cursor-pointer"
         >
-          Submit another
+          Submit another lead
         </button>
       </div>
     )
@@ -114,10 +117,10 @@ export default function LeadForm() {
 
       <button
         type="submit"
-        disabled={loading}
+        disabled={isLoading}
         className="w-full bg-blue-600 text-white py-2 rounded-lg disabled:opacity-60 cursor-pointer"
       >
-        {loading ? 'Submitting...' : 'Submit'}
+        {isLoading ? 'Submitting...' : 'Submit'}
       </button>
 
     </form>
