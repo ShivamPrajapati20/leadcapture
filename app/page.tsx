@@ -1,4 +1,5 @@
 import LeadForm from '@/app/components/leadForm';
+import Link from 'next/link'
 
 export default function Home() {
   return (
@@ -18,6 +19,15 @@ export default function Home() {
         {/* Landing Form */}
         <div className="bg-white p-6 rounded-xl shadow">
           <LeadForm />
+
+          <div className="text-center">
+            <Link
+              href="/leads"
+              className="text-sm text-blue-600 hover:underline"
+            >
+              View submitted leads
+            </Link>
+          </div>
         </div>
         
       </div>
